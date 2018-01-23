@@ -45,7 +45,7 @@
      sicp
      )
    dotspacemacs-frozen-packages '()
-   dotspacemacs-excluded-packages '()
+   dotspacemacs-excluded-packages '(scss-mode)
    dotspacemacs-install-packages 'used-only))
 
 (defun dotspacemacs/init ()
