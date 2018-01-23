@@ -154,19 +154,6 @@
   ;; alternative config for .vue files to always open in web-mode
   ;; (add-to-list 'auto-mode-alist '("\\.vue$" . web-mode))
   (setq powerline-default-separator 'utf-8)
-
-  ;; Enable vetur for vue-mode
-  (require 'vue-mode)
-  (add-to-list 'vue-mode-hook #'smartparens-mode)
-
-  (require 'lsp-mode)
-  (require 'lsp-vue)
-  (add-hook 'vue-mode-hook #'lsp-vue-mmm-enable)
-  (with-eval-after-load 'lsp-mode
-    (require 'lsp-flycheck))
-
-  (require 'company-lsp)
-  (push 'company-lsp company-backends)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
