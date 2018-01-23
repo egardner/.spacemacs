@@ -10,18 +10,18 @@
    dotspacemacs-configuration-layer-path '()
    dotspacemacs-configuration-layers
    '(
-     yaml
      auto-completion
      ;; better-defaults
      ;; org
      emacs-lisp
      git
+     github
      html
      ivy
      javascript
      markdown
      osx
-     themes-megapack
+     ;; themes-megapack
      vuejs
      syntax-checking
      (ruby :variables
@@ -140,6 +140,12 @@
    ))
 
 (defun dotspacemacs/user-init ()
+  (when (memq window-system '(mac ns))
+    (with-eval-after-load 'exec-path-from-shell
+      (exec-path-from-shell-initialize)
+      ;; (exec-path-from-shell-setenv "LANG" "en_US.UTF-8")
+      )
+    )
   )
 
 (defun dotspacemacs/user-config ()
@@ -149,19 +155,16 @@
 
   ;; Enable vetur for vue-mode
   (require 'vue-mode)
-    (add-to-list 'vue-mode-hook #'smartparens-mode)
-  (require 'lsp-mode)
-    (require 'lsp-vue)
-    (add-hook 'vue-mode-hook #'lsp-vue-mmm-enable)
-    (with-eval-after-load 'lsp-mode
-      (require 'lsp-flycheck))
-  (require 'company-lsp)
-    (push 'company-lsp company-backends)
+  (add-to-list 'vue-mode-hook #'smartparens-mode)
 
-  ;; Modify the search functionality because of emtpy buffer bug when using Ivy
-  ;; https://github.com/syl20bnr/spacemacs/issues/9652
-  (spacemacs/set-leader-keys (kbd "/") 'counsel-projectile-ag)
-  (spacemacs/set-leader-keys "sap" 'counsel-projectile-ag)
+  (require 'lsp-mode)
+  (require 'lsp-vue)
+  (add-hook 'vue-mode-hook #'lsp-vue-mmm-enable)
+  (with-eval-after-load 'lsp-mode
+    (require 'lsp-flycheck))
+
+  (require 'company-lsp)
+  (push 'company-lsp company-backends)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -180,7 +183,7 @@
  '(js2-strict-trailing-comma-warning nil)
  '(package-selected-packages
    (quote
-    (powerline request pcre2el spinner org-plus-contrib hydra parent-mode helm helm-core flx fuzzy company-web web-completion-data company-tern dash-functional company-statistics auto-yasnippet ac-ispell auto-complete lsp-vue company-lsp company lsp-mode pos-tip flycheck zenburn-theme zen-and-art-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme tern tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme seti-theme reverse-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme madhat2r-theme lush-theme light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme flatui-theme flatland-theme farmhouse-theme espresso-theme dracula-theme django-theme darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme vue-mode edit-indirect ssass-mode vue-html-mode skewer-mode simple-httpd json-snatcher json-reformat yasnippet multiple-cursors js2-mode inf-ruby markdown-mode gitignore-mode magit magit-popup git-commit ghub with-editor scss-mode haml-mode wgrep smex ivy-hydra define-word counsel-projectile counsel swiper ivy yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package unfill toml-mode toc-org tagedit spaceline smeargle slim-mode sicp shell-pop sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe reveal-in-osx-finder restart-emacs rbenv rake rainbow-delimiters racer pug-mode popwin persp-mode pbcopy paradox osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-download org-bullets open-junk-file neotree mwim multi-term move-text mmm-mode minitest markdown-toc magit-gitflow macrostep lorem-ipsum livid-mode linum-relative link-hint less-css-mode launchctl json-mode js2-refactor js-doc info+ indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-ag google-translate golden-ratio go-guru go-eldoc gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md flycheck-rust flycheck-pos-tip flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help enh-ruby-mode emmet-mode elisp-slime-nav dumb-jump diminish diff-hl dactyl-mode column-enforce-mode coffee-mode clean-aindent-mode chruby cargo bundler auto-highlight-symbol auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line))))
+    (magit-gh-pulls github-search github-clone github-browse-file gist gh marshal logito pcache ht fuzzy company-web web-completion-data company-tern dash-functional company-statistics auto-yasnippet ac-ispell auto-complete lsp-vue company-lsp company lsp-mode pos-tip flycheck zenburn-theme zen-and-art-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme tern tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme seti-theme reverse-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme madhat2r-theme lush-theme light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme flatui-theme flatland-theme farmhouse-theme espresso-theme dracula-theme django-theme darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme vue-mode edit-indirect ssass-mode vue-html-mode skewer-mode simple-httpd json-snatcher json-reformat yasnippet multiple-cursors js2-mode inf-ruby markdown-mode gitignore-mode magit magit-popup git-commit ghub with-editor scss-mode haml-mode wgrep smex ivy-hydra define-word counsel-projectile counsel swiper ivy yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package unfill toml-mode toc-org tagedit spaceline smeargle slim-mode sicp shell-pop sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe reveal-in-osx-finder restart-emacs rbenv rake rainbow-delimiters racer pug-mode popwin persp-mode pbcopy paradox osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-download org-bullets open-junk-file neotree mwim multi-term move-text mmm-mode minitest markdown-toc magit-gitflow macrostep lorem-ipsum livid-mode linum-relative link-hint less-css-mode launchctl json-mode js2-refactor js-doc info+ indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-css-scss helm-ag google-translate golden-ratio go-guru go-eldoc gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md flycheck-rust flycheck-pos-tip flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help enh-ruby-mode emmet-mode elisp-slime-nav dumb-jump diminish diff-hl dactyl-mode column-enforce-mode coffee-mode clean-aindent-mode chruby cargo bundler auto-highlight-symbol auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
