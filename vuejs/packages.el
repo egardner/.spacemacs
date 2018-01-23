@@ -36,6 +36,21 @@
   (use-package vue-mode
     :config
     ;; 0, 1, or 2, representing (respectively) none, low, and high coloring
-    (setq mmm-submode-decoration-level 0)))
+    (setq mmm-submode-decoration-level 0))
+
+  ;; Enable vetur for vue-mode
+  (require 'vue-mode)
+  (add-to-list 'vue-mode-hook #'smartparens-mode)
+
+  (require 'lsp-mode)
+  (require 'lsp-vue)
+  (add-hook 'vue-mode-hook #'lsp-vue-mmm-enable)
+  (with-eval-after-load 'lsp-mode
+    (require 'lsp-flycheck))
+
+  (require 'company-lsp)
+  (push 'company-lsp company-backends)
+
+  )
 
 ;;; packages.el ends here
