@@ -35,6 +35,7 @@
 (defun prettier/init-prettier-js ()
   (use-package prettier-js)
 
+  ;; Uncomment for auto-format on save functionality
   ;; (add-hook 'js2-mode-hook 'prettier-js-mode)
   ;; (add-hook 'web-mode-hook 'prettier-js-mode)
 
