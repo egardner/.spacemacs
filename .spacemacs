@@ -23,6 +23,7 @@
      osx
      ;; themes-megapack
      vuejs
+     yaml
      syntax-checking
      (ruby :variables
            ruby-version-manager 'rbenv
