@@ -153,6 +153,12 @@
 (defun dotspacemacs/user-config ()
   ;; alternative config for .vue files to always open in web-mode
   ;; (add-to-list 'auto-mode-alist '("\\.vue$" . web-mode))
+  
+  ;; Fixes for this issue: https://github.com/syl20bnr/spacemacs/issues/9652
+  ;; keep until the fix makes its way into master
+  (spacemacs/set-leader-keys (kbd "/") 'counsel-projectile-ag)
+  (spacemacs/set-leader-keys (kbd "s a p") 'counsel-projectile-ag)
+
   (setq powerline-default-separator 'utf-8)
   )
 
