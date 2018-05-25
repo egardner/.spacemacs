@@ -28,7 +28,7 @@
      typescript
      prettier
      ;; themes-megapack
-     vuejs
+     ;; vuejs
      yaml
      syntax-checking
      (ruby :variables
@@ -157,7 +157,7 @@
 
 (defun dotspacemacs/user-config ()
   ;; alternative config for .vue files to always open in web-mode
-  ;; (add-to-list 'auto-mode-alist '("\\.vue$" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.vue$" . web-mode))
   (setq powerline-default-separator 'utf-8)
 
   ;; Fixes for this issue: https://github.com/syl20bnr/spacemacs/issues/9652
@@ -189,7 +189,9 @@
  '(vue-html-extra-indent 2)
  '(web-mode-code-indent-offset 2)
  '(web-mode-css-indent-offset 2)
- '(web-mode-markup-indent-offset 2))
+ '(web-mode-markup-indent-offset 2)
+ '(web-mode-script-padding 0)
+ '(web-mode-style-padding 0))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
