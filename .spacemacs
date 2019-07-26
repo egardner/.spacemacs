@@ -10,22 +10,26 @@
    dotspacemacs-configuration-layer-path '()
    dotspacemacs-configuration-layers
    '(
+     yaml
+     php
+     helm
      auto-completion
      better-defaults
      emacs-lisp
      git
      html
-     ivy
      javascript
      markdown
      org
      osx
      (shell :variables
-            shell-default-height 30
+            shell-default-height 25
+            shell-default-term-shell "/bin/zsh"
             shell-default-position 'bottom)
+     ruby
      ;; spell-checking
      syntax-checking
-     yaml
+     version-control
      )
    dotspacemacs-additional-packages '()
    dotspacemacs-frozen-packages '()
@@ -87,14 +91,7 @@
    dotspacemacs-show-transient-state-color-guide t
    dotspacemacs-mode-line-unicode-symbols t
    dotspacemacs-smooth-scrolling t
-   dotspacemacs-line-numbers '(:relative nil
-                               :disabled-for-modes dired-mode
-                                                   doc-view-mode
-                                                   markdown-mode
-                                                   org-mode
-                                                   pdf-view-mode
-                                                   text-mode
-                               :size-limit-kb 1000)
+   dotspacemacs-line-numbers t
    dotspacemacs-folding-method 'evil
    dotspacemacs-smartparens-strict-mode nil
    dotspacemacs-smart-closing-parenthesis nil
@@ -102,7 +99,7 @@
    dotspacemacs-persistent-server nil
    dotspacemacs-search-tools '("ag" "pt" "ack" "grep")
    dotspacemacs-default-package-repository nil
-   dotspacemacs-whitespace-cleanup 'trailing
+   dotspacemacs-whitespace-cleanup nil
    ))
 
 (defun dotspacemacs/user-init ()
@@ -113,18 +110,65 @@
   )
 
 (defun dotspacemacs/user-config ()
-  ;; Use clean powerline separator
   (setq powerline-default-separator 'utf-8)
 
-  ;; Use web-mode for .vue files
-  (add-to-list 'auto-mode-alist '("\\.vue$" . web-mode))
+  ;; Custom file extension/mode association
+  (add-to-list 'auto-mode-alist '("\\.mustache\\+dom\\'" . web-mode))
 
-  ;; ESLint configuration for js2 and web modes
-  (setq-default flycheck-disabled-checkers
-                (append flycheck-disabled-checkers
-                        '(javascript-jshint json-jsonlist)))
-  (flycheck-add-mode 'javascript-eslint 'web-mode)
-  (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  ;; Use clean dired output
+  (defun clean-dired-setup ()
+    "To be run as hook for `dired-mode'."
+    (dired-hide-details-mode 1))
+  (add-hook 'dired-mode-hook 'clean-dired-setup)
+
+  ;; BEGIN LOCAL ESLINT
+
+  (defun my/use-eslint-from-node-modules ()
+    (let* ((root (locate-dominating-file
+                  (or (buffer-file-name) default-directory)
+                  "node_modules"))
+           (eslint (and root
+                        (expand-file-name "node_modules/.bin/eslint"
+                                          root))))
+      (when (and eslint (file-executable-p eslint))
+        (setq-local flycheck-javascript-eslint-executable eslint))))
+
+  (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
+  ;; END LOCAL ESLINT
+
+  ;; START TABS CONFIG
+  ;;
+  ;; Create a variable for our preferred tab width
+  (setq custom-tab-width 4)
+
+  ;; Two callable functions for enabling/disabling tabs in Emacs
+  (defun disable-tabs () (setq indent-tabs-mode nil))
+  (defun enable-tabs  ()
+    (local-set-key (kbd "TAB") 'tab-to-tab-stop)
+    (setq indent-tabs-mode t)
+    (setq tab-width custom-tab-width))
+
+  ;; Hooks to Enable Tabs
+  (add-hook 'prog-mode-hook 'enable-tabs)
+  ;; Hooks to Disable Tabs
+  (add-hook 'lisp-mode-hook 'disable-tabs)
+  (add-hook 'emacs-lisp-mode-hook 'disable-tabs)
+
+  ;; Language-Specific Tweaks
+  (setq-default python-indent-offset custom-tab-width) ;; Python
+  (setq-default js-indent-level custom-tab-width)      ;; Javascript
+
+  ;; Making electric-indent behave sanely
+  (setq-default electric-indent-inhibit t)
+
+  ;; Make the backspace properly erase the tab instead of
+  ;; removing 1 space at a time.
+  (setq backward-delete-char-untabify-method 'hungry)
+
+  ;; (OPTIONAL) Shift width for evil-mode users
+  ;; For the vim-like motions of ">>" and "<<".
+  (setq-default evil-shift-width custom-tab-width)
+  ;; END TABS CONFIG
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -134,15 +178,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(css-indent-offset 2)
- '(js-indent-level 2)
- '(js2-mode-show-strict-warnings nil)
- '(js2-strict-missing-semi-warning nil)
- '(js2-strict-trailing-comma-warning nil)
  '(package-selected-packages
    (quote
-    (yaml-mode xterm-color web-mode web-beautify unfill tagedit smeargle slim-mode shell-pop scss-mode sass-mode reveal-in-osx-finder pug-mode pbcopy osx-trash osx-dictionary orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download mwim multi-term mmm-mode markdown-toc markdown-mode magit-gitflow livid-mode skewer-mode simple-httpd launchctl json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc htmlize haml-mode gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flyspell-correct-ivy flyspell-correct flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit ghub treepy graphql with-editor eshell-z eshell-prompt-extras esh-help emmet-mode company-web web-completion-data company-tern dash-functional tern company-statistics company coffee-mode auto-yasnippet yasnippet auto-dictionary ac-ispell auto-complete ws-butler winum which-key wgrep volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline smex restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint ivy-hydra indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-make helm helm-core google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump popup f dash s diminish define-word counsel-projectile projectile pkg-info epl counsel swiper ivy column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed async aggressive-indent adaptive-wrap ace-window ace-link avy)))
- '(standard-indent 2))
+    (yaml-mode phpunit phpcbf php-extras php-auto-yasnippets drupal-mode php-mode xterm-color web-mode web-beautify unfill tagedit smeargle slim-mode shell-pop scss-mode sass-mode rvm ruby-tools ruby-test-mode rubocop rspec-mode robe reveal-in-osx-finder rbenv rake pug-mode pbcopy osx-trash osx-dictionary orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download mwim multi-term mmm-mode minitest markdown-toc markdown-mode magit-gitflow magit-popup livid-mode skewer-mode simple-httpd launchctl json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc htmlize helm-gitignore helm-css-scss helm-company helm-c-yasnippet haml-mode gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md fuzzy flycheck-pos-tip pos-tip flycheck evil-magit magit transient git-commit with-editor eshell-z eshell-prompt-extras esh-help emmet-mode diff-hl company-web web-completion-data company-tern dash-functional tern company-statistics company coffee-mode chruby bundler inf-ruby auto-yasnippet yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra lv hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile projectile pkg-info epl helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
